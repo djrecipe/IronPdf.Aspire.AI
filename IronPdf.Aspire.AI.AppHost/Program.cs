@@ -4,7 +4,7 @@ var builder = DistributedApplication.CreateBuilder(args);
 
 var pdfEngine = builder.AddIronEngine("pdfengine");
 
-var chromadb = builder.AddIronEngine("chromadb");
+var chromadb = builder.AddChromaDb("chromadb");
 
 var apiService = builder.AddProject<Projects.IronPdf_Aspire_AI_ApiService>("apiservice");
 
