@@ -35,6 +35,11 @@ namespace IronPdf.Aspire.AI.ServiceDefaults
                 return summary;
             }
         }
+        public async Task<string> SummarizePdf(PdfDocument doc)
+        {
+            var summary = await doc.Summarize(new int[]{0}); // optionally pass AI instance or use AI instance directly
+            return summary;
+        }
     }
     public static class DocumentIntelligenceExtensions
     {

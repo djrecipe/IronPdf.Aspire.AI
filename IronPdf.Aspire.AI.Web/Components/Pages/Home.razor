@@ -34,24 +34,32 @@
     </p>
 </div>
 
+<h3 class="summarize__label">Summarize PDF</h3>
 <div class="summarize__container">
     <div class="summarize__actions">
         <div class="summarize__drag-drop__area" @ref="_DropArea">
             <span>Drag & Drop or click to upload file</span>
         </div>
 
+        <InputFile OnChange="HandleFileUpload" class="hidden-input-file" hidden />
+
         <button class="summarize__btn">Summarize</button>
     </div>
 
     <p class="summarize__text">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+
+        @if (String.IsNullOrEmpty(Summary2))
+        {
+            <span>Summarized text should appear here!</span>
+        }
+        else
+        {
+            @(Summary2)
+        }
     </p>
 </div>
 
+@* <h3 class="summarize__label">Chat with PDF</h3>
 <div class="summarize__container">
     <div class="summarize__actions">
         <div class="summarize__drag-drop__area"@ref="_DropArea">
@@ -75,7 +83,7 @@
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
     </p>
-</div>
+</div> *@
 
 <script>
     window.downloadFileFromStream = async (fileName, contentStreamReference) => {
@@ -92,7 +100,8 @@
 </script>
 
 @code {
-    public string Summary { get; set; } = "Click Summarize to get the summary of the URL";
+    public string Summary { get; set; } = null;
+    public string Summary2 { get; set; } = null;
     
     public string URL { get; set; } = "https://en.wikipedia.org/wiki/Elvis_Presley";
     
@@ -137,6 +146,6 @@
 
         memoryStream.Position = 0;
 
-        Console.WriteLine(memoryStream.Length.ToString());
+        Summary2 = await DocumentIntelligence.SummarizePdf(new PdfDocument(memoryStream));
     }
 }
