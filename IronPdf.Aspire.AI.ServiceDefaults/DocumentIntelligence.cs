@@ -40,6 +40,15 @@ namespace IronPdf.Aspire.AI.ServiceDefaults
             var summary = await doc.Summarize(new int[]{0}); // optionally pass AI instance or use AI instance directly
             return summary;
         }
+        public async Task<string> AskQuestion(PdfDocument doc, string question)
+        {
+            var summary = await doc.Query(question, new int[]{0}); // optionally pass AI instance or use AI instance directly
+            return summary;
+        }
+        public async Task Memorize(PdfDocument doc)
+        {
+            await doc.Memorize(new int[]{0}); // optionally pass AI instance or use AI instance directly
+        }
     }
     public static class DocumentIntelligenceExtensions
     {

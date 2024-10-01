@@ -17,7 +17,7 @@
         <label class="cta__label">Please enter a URL to summarize the first page</label>
 
         <div class="summarize__input">
-            <input class="input__url" type="text" />
+            <input class="input__url" type="text" @bind-value="URL" />
             <button class="summarize__btn" @onclick="SummarizePDF">Summarize</button>
         </div>
     </div>
@@ -37,7 +37,7 @@
 <h3 class="summarize__label">Summarize PDF</h3>
 <div class="summarize__container">
     <div class="summarize__actions">
-        <div class="summarize__drag-drop__area" @ref="_DropArea2" @onclick="BrowseFile">
+        <div class="summarize__drag-drop__area" @ref="_DropArea">
             <span>Drag & Drop or click to upload file</span>
         </div>
 
@@ -60,24 +60,30 @@
 <h3 class="summarize__label">Chat with PDF</h3>
 <div class="summarize__container">
     <div class="summarize__actions">
-        <div class="summarize__drag-drop__area" @ref="_DropArea" @onclick="BrowseFile">
+        <div class="summarize__drag-drop__area" @ref="_DropArea2">
             <span>Drag & Drop or click to upload file</span>
         </div>
+
+        <InputFile OnChange="HandleFileUpload2" class="hidden-input-file2" hidden />
     </div>
 
     <div class="summarize__cta">
         <div class="summarize__input">
-            <input class="input__url" type="text" />
-            <button class="summarize__btn">Ask AI</button>
+            <input class="input__url" type="text" @bind-value="Question" />
+            <button class="summarize__btn" @onclick="Callback">Ask AI</button>
         </div>
     </div>
 
     <p class="summarize__text">
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
-        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+
+        @if (String.IsNullOrEmpty(Summary3))
+        {
+            <span>Summarized text should appear here!</span>
+        }
+        else
+        {
+            @(Summary3)
+        }
     </p>
 </div>
 
@@ -97,7 +103,11 @@
 
 @code {
     public string Summary { get; set; } = null;
+    public string Question { get; set; } = "Is a .NET 5 library usable with .NET Core 3.1?";
     public string Summary2 { get; set; } = null;
+    public string Summary3 { get; set; } = null;
+
+    private PdfDocument mypdf;
 
     public string URL { get; set; } = "https://en.wikipedia.org/wiki/Elvis_Presley";
 
@@ -126,16 +136,16 @@
         {
             _Module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./main.js");
 
-            await _Module.InvokeVoidAsync("initialize", _DropArea);
+            await _Module.InvokeVoidAsync("initialize", _DropArea, _DropArea2);
         }
 
         await base.OnAfterRenderAsync(firstRender);
     }
 
-    private async Task BrowseFile()
-    {
-        await _Module.InvokeVoidAsync("browse_file");
-    }
+    // private async Task BrowseFile()
+    // {
+    //     await _Module.InvokeVoidAsync("browse_file");
+    // }
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)
     {
@@ -153,4 +163,29 @@
 
         Summary2 = await DocumentIntelligence.SummarizePdf(new PdfDocument(memoryStream));
     }
+
+    private async Task HandleFileUpload2(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        var memoryStream = new MemoryStream();
+
+        var stream = file.OpenReadStream(e.File.Size);
+
+        await stream.CopyToAsync(memoryStream);
+
+        memoryStream.Position = 0;
+
+        IronPdf.License.LicenseKey = "IRONPDF.DEVTEAM.IX1465-92A278403D-F5U2BHGMSE-XEUGFHNGOQL5-6D44POEHBLGW-N4ACGZJOJI3C-INR3PPCPRZD5-ZFTNAP-LSEN2ZUUJGSVUA-UNIT.TEST-MW2IAU.RENEW.SUPPORT.14.JUL.2029";
+
+        mypdf = new PdfDocument(memoryStream);
+
+        await DocumentIntelligence.Memorize(mypdf);
+    }
+
+    private async Task Callback()
+    {
+        Summary3 = await DocumentIntelligence.AskQuestion(mypdf, Question);
+    }
+
 }

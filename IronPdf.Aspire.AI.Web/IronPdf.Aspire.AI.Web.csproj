@@ -10,4 +10,7 @@
     <ProjectReference Include="..\IronPdf.Aspire.AI.ServiceDefaults\IronPdf.Aspire.AI.ServiceDefaults.csproj" />
   </ItemGroup>
 
+    <ItemGroup>
+        <PackageReference Include="System.Linq.Async" Version="4.0.0" />
+    </ItemGroup>
 </Project>
