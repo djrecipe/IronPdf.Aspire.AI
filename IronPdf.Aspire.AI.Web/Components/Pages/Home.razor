@@ -7,21 +7,33 @@
 @inject PdfGenerator PdfGenerator
 @inject DocumentIntelligence DocumentIntelligence
 @rendermode InteractiveServer
+
 <PageTitle>Home</PageTitle>
 
-<h1>Summarize URL</h1>
-<div>
-    <Label>Please enter a URL to summarize the first page:</Label>
-    <textarea>@URL</textarea>
+<div class="summarize__container">
+    <h3 class="summarize__label">Summarize URL</h3>
+
+    <div class="summarize__cta">
+        <label class="cta__label">Please enter a URL to summarize the first page</label>
+
+        <div class="summarize__input">
+            <input class="input__url" type="text" />
+            <button class="summarize__btn" @onclick="SummarizePDF">Summarize</button>
+        </div>
+    </div>
+
+    <p class="summarize__text">
+        @if (String.IsNullOrEmpty(Summary))
+        {
+            <span>Summarized text should appear here!</span>
+        }
+        else
+        {
+            @(Summary)
+        }
+    </p>
 </div>
-<div></div>
-@* <div>
-    <Button @onclick="ExportPDF">Export PDF</Button>
-</div> *@
-<div>
-    <Button @onclick="SummarizePDF">Summarize</Button>
-    <label>@Summary</label>
-</div>
+
 <script>
     window.downloadFileFromStream = async (fileName, contentStreamReference) => {
       const arrayBuffer = await contentStreamReference.arrayBuffer();
@@ -35,7 +47,6 @@
       URL.revokeObjectURL(url);
     }
 </script>
-
 
 @code {
     
