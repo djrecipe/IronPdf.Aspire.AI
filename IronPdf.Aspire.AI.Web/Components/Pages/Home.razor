@@ -42,8 +42,6 @@
         </div>
 
         <InputFile OnChange="HandleFileUpload" class="hidden-input-file" hidden />
-
-        <button class="summarize__btn">Summarize</button>
     </div>
 
     <p class="summarize__text">
@@ -150,6 +148,8 @@
         await stream.CopyToAsync(memoryStream);
 
         memoryStream.Position = 0;
+
+        IronPdf.License.LicenseKey = "IRONPDF.DEVTEAM.IX1465-92A278403D-F5U2BHGMSE-XEUGFHNGOQL5-6D44POEHBLGW-N4ACGZJOJI3C-INR3PPCPRZD5-ZFTNAP-LSEN2ZUUJGSVUA-UNIT.TEST-MW2IAU.RENEW.SUPPORT.14.JUL.2029";
 
         Summary2 = await DocumentIntelligence.SummarizePdf(new PdfDocument(memoryStream));
     }
