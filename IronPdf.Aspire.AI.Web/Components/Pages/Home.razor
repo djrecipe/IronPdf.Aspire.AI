@@ -1,6 +1,6 @@
 ﻿@page "/"
 @using IronPdf.Aspire.AI.ServiceDefaults
-@inject IJSRuntime jsRuntime
+@inject IJSRuntime JSRuntime
 @inject IConfiguration Configuration
 @inject NavigationManager NavigationManager
 @inject IServiceProvider Services
@@ -34,6 +34,49 @@
     </p>
 </div>
 
+<div class="summarize__container">
+    <div class="summarize__actions">
+        <div class="summarize__drag-drop__area" @ref="_DropArea">
+            <span>Drag & Drop or click to upload file</span>
+        </div>
+
+        <button class="summarize__btn">Summarize</button>
+    </div>
+
+    <p class="summarize__text">
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+    </p>
+</div>
+
+<div class="summarize__container">
+    <div class="summarize__actions">
+        <div class="summarize__drag-drop__area"@ref="_DropArea">
+            <span>Drag & Drop or click to upload file</span>
+        </div>
+
+        <InputFile OnChange="HandleFileUpload" class="hidden-input-file" hidden />
+    </div>
+
+    <div class="summarize__cta">
+        <div class="summarize__input">
+            <input class="input__url" type="text" />
+            <button class="summarize__btn">Ask AI</button>
+        </div>
+    </div>
+
+    <p class="summarize__text">
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
+    </p>
+</div>
+
 <script>
     window.downloadFileFromStream = async (fileName, contentStreamReference) => {
       const arrayBuffer = await contentStreamReference.arrayBuffer();
@@ -49,18 +92,51 @@
 </script>
 
 @code {
-    
     public string Summary { get; set; } = "Click Summarize to get the summary of the URL";
+    
     public string URL { get; set; } = "https://en.wikipedia.org/wiki/Elvis_Presley";
+    
     private async Task ExportPDF()
     {
         var pdf = await PdfGenerator.GeneratePdfFromHtml("<h1>foo</h1>");
         using var streamRef = new DotNetStreamReference(stream: pdf);
-        await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "HelloWorld.pdf", streamRef);
+        await JSRuntime.InvokeVoidAsync("downloadFileFromStream", "HelloWorld.pdf", streamRef);
     }
+    
     private async Task SummarizePDF()
     {
         var result = await DocumentIntelligence.SummarizeUrl(URL);
         Summary = result;
+    }
+
+    private IJSObjectReference? _Module;
+
+    private ElementReference _DropArea;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _Module = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./main.js");
+
+            await _Module.InvokeVoidAsync("initialize", _DropArea);
+        }
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+
+        var memoryStream = new MemoryStream();
+
+        var stream = file.OpenReadStream(e.File.Size);
+
+        await stream.CopyToAsync(memoryStream);
+
+        memoryStream.Position = 0;
+
+        Console.WriteLine(memoryStream.Length.ToString());
     }
 }
