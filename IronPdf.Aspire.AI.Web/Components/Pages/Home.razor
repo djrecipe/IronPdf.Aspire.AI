@@ -37,7 +37,7 @@
 <h3 class="summarize__label">Summarize PDF</h3>
 <div class="summarize__container">
     <div class="summarize__actions">
-        <div class="summarize__drag-drop__area" @ref="_DropArea">
+        <div class="summarize__drag-drop__area" @ref="_DropArea2" @onclick="BrowseFile">
             <span>Drag & Drop or click to upload file</span>
         </div>
 
@@ -59,14 +59,12 @@
     </p>
 </div>
 
-@* <h3 class="summarize__label">Chat with PDF</h3>
+<h3 class="summarize__label">Chat with PDF</h3>
 <div class="summarize__container">
     <div class="summarize__actions">
-        <div class="summarize__drag-drop__area"@ref="_DropArea">
+        <div class="summarize__drag-drop__area" @ref="_DropArea" @onclick="BrowseFile">
             <span>Drag & Drop or click to upload file</span>
         </div>
-
-        <InputFile OnChange="HandleFileUpload" class="hidden-input-file" hidden />
     </div>
 
     <div class="summarize__cta">
@@ -83,7 +81,7 @@
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
         Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum, numquam repellendus laboriosam maxime impedit quaerat aliquam sapiente nihil aliquid? Nesciunt voluptatum eveniet asperiores. Reprehenderit modi, deserunt minus illo autem blanditiis.
     </p>
-</div> *@
+</div>
 
 <script>
     window.downloadFileFromStream = async (fileName, contentStreamReference) => {
@@ -102,16 +100,16 @@
 @code {
     public string Summary { get; set; } = null;
     public string Summary2 { get; set; } = null;
-    
+
     public string URL { get; set; } = "https://en.wikipedia.org/wiki/Elvis_Presley";
-    
+
     private async Task ExportPDF()
     {
         var pdf = await PdfGenerator.GeneratePdfFromHtml("<h1>foo</h1>");
         using var streamRef = new DotNetStreamReference(stream: pdf);
         await JSRuntime.InvokeVoidAsync("downloadFileFromStream", "HelloWorld.pdf", streamRef);
     }
-    
+
     private async Task SummarizePDF()
     {
         var result = await DocumentIntelligence.SummarizeUrl(URL);
@@ -121,6 +119,8 @@
     private IJSObjectReference? _Module;
 
     private ElementReference _DropArea;
+
+    private ElementReference _DropArea2;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -132,6 +132,11 @@
         }
 
         await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task BrowseFile()
+    {
+        await _Module.InvokeVoidAsync("browse_file");
     }
 
     private async Task HandleFileUpload(InputFileChangeEventArgs e)

@@ -1,4 +1,6 @@
-﻿export function initialize(drop_area) {
+﻿export function initialize(drop_area, drop_area2) {
+    var hiddenInputFile = document.querySelector('.hidden-input-file');
+
     drop_area.addEventListener('dragover', (e) => {
         e.preventDefault();
     });
@@ -6,7 +8,19 @@
     drop_area.addEventListener('drop', (e) => {
         e.preventDefault();
 
-        var hiddenInputFile = document.querySelector('.hidden-input-file');
+        hiddenInputFile.files = e.dataTransfer.files;
+
+        var customChangeEvent = new Event('change', { bubbles: true });
+
+        hiddenInputFile.dispatchEvent(customChangeEvent);
+    });
+
+    drop_area2.addEventListener('dragover', (e) => {
+        e.preventDefault();
+    });
+
+    drop_area2.addEventListener('drop', (e) => {
+        e.preventDefault();
 
         hiddenInputFile.files = e.dataTransfer.files;
 
@@ -14,4 +28,8 @@
 
         hiddenInputFile.dispatchEvent(customChangeEvent);
     });
+}
+
+export function browse_file(hidden_input_file) {
+    hidden_input_file.click();
 }
