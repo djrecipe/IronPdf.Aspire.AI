@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireSharedProject>true</IsAspireSharedProject>
+    <UserSecretsId>c90bb08d-7260-4a26-a1d2-7ff39ac59b39</UserSecretsId>
+  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <NoWarn>1701;1702;SKEXP0001;SKEXP0010;SKEXP0003;SKEXP0052; SKEXP0070; SKEXP0050;1701;1702;SKEXP0001;SKEXP0010;SKEXP0022;SKEXP0052;SKEXP0011;SKEXP0050;SKEXP0020</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <NoWarn>1701;1702;SKEXP0001;SKEXP0010;SKEXP0003;SKEXP0052; SKEXP0070; SKEXP0050;1701;1702;SKEXP0001;SKEXP0010;SKEXP0022;SKEXP0052;SKEXP0011;SKEXP0050;SKEXP0020</NoWarn>
+    </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="IronPdf" Version="2024.9.3" />
+    <PackageReference Include="IronPdf.Extensions.AI" Version="2024.9.3" />
+
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="8.3.0" />
+    <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" Version="8.0.1" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.8.1" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.8.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.8.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.8.1" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.8.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Chroma" Version="1.17.1-alpha" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.17.1" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.HuggingFace" Version="1.17.1-preview" />
+    <PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.17.1-alpha" />
+  </ItemGroup>
+
+</Project>

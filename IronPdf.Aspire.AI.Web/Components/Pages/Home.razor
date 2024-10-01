@@ -1,0 +1,55 @@
+﻿@page "/"
+@using IronPdf.Aspire.AI.ServiceDefaults
+@inject IJSRuntime jsRuntime
+@inject IConfiguration Configuration
+@inject NavigationManager NavigationManager
+@inject IServiceProvider Services
+@inject PdfGenerator PdfGenerator
+@inject DocumentIntelligence DocumentIntelligence
+@rendermode InteractiveServer
+<PageTitle>Home</PageTitle>
+
+<h1>Summarize URL</h1>
+<div>
+    <Label>Please enter a URL to summarize the first page:</Label>
+    <textarea>@URL</textarea>
+</div>
+<div></div>
+@* <div>
+    <Button @onclick="ExportPDF">Export PDF</Button>
+</div> *@
+<div>
+    <Button @onclick="SummarizePDF">Summarize</Button>
+    <label>@Summary</label>
+</div>
+<script>
+    window.downloadFileFromStream = async (fileName, contentStreamReference) => {
+      const arrayBuffer = await contentStreamReference.arrayBuffer();
+      const blob = new Blob([arrayBuffer]);
+      const url = URL.createObjectURL(blob);
+      const anchorElement = document.createElement('a');
+      anchorElement.href = url;
+      anchorElement.download = fileName ?? '';
+      anchorElement.click();
+      anchorElement.remove();
+      URL.revokeObjectURL(url);
+    }
+</script>
+
+
+@code {
+    
+    public string Summary { get; set; } = "Click Summarize to get the summary of the URL";
+    public string URL { get; set; } = "https://en.wikipedia.org/wiki/Elvis_Presley";
+    private async Task ExportPDF()
+    {
+        var pdf = await PdfGenerator.GeneratePdfFromHtml("<h1>foo</h1>");
+        using var streamRef = new DotNetStreamReference(stream: pdf);
+        await jsRuntime.InvokeVoidAsync("downloadFileFromStream", "HelloWorld.pdf", streamRef);
+    }
+    private async Task SummarizePDF()
+    {
+        var result = await DocumentIntelligence.SummarizeUrl(URL);
+        Summary = result;
+    }
+}
